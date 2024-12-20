@@ -12,7 +12,7 @@ client = OpenAI(
 )
 
 app = Flask(__name__)
-CORS(app, support_credentials=True)  # Habilita o CORS para todas as rotas
+CORS(app)  # Habilita o CORS para todas as rotas
 
 # Regras de batalha entre objetos e seus emojis
 # alguma hora eu ainda posso usar isso
@@ -69,10 +69,15 @@ def get_battle_result(obj1, obj2):
     except Exception as e:
         print(str(e))
         return {"error": f"Erro ao se comunicar com a API do ChatGPT: {str(e)}"}
+        
+@app.route('/hello', methods=['POST'])
+@cross_origin(origin='*')
+def hello():
+    return "hello"
 
 # Endpoint de batalha
 @app.route('/batalha', methods=['POST'])
-@cross_origin(supports_credentials=True)
+@cross_origin(origin='*')
 def batalha():
     try:
         data = request.get_json()
