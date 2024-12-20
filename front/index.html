@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo de Batalha</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #game-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #obj1-display {
+      text-align: center;
+    }
+
+    #obj1-emoji {
+      font-size: 48px;
+    }
+
+    #battle {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #obj2-input {
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    #battle-button {
+      display: inline;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #battle-button:hover {
+      background-color: #45a049;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.5s;
+    }
+    .loader {
+      display: none;
+      margin-top: 10px;
+      border: 5px solid #f3f3f3; /* Light grey */
+      border-top: 5px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 0.5s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="obj1-display">
+      <h5>Score: <span id="score">0</span></h1>
+      <h6>High Score: <span id="highScore">0</span></h2>
+      <h1 id="obj1-name">Pedra</h1>
+      <div id="obj1-emoji">🗿</div>
+    </div>
+    <div id="battle">
+      <label for="obj2-input">O que derrota um(a) <span id="obj1-name-text">Pedra</span>?</label>
+      <br>
+      <input type="text" id="obj2-input" placeholder="Digite o que acha que derrota o(a) Pedra">
+      <br>
+      <button id="battle-button">Batalhar</button>
+      <div class="loader" id="loader"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // faz o enter clicar o botão de batalha
+    document.getElementById('obj2-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        document.getElementById('battle-button').click();
+      }
+    });
+
+    // score
+    let score = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
+    document.getElementById('highScore').innerText = highScore;
+    
+    // incrementar o score
+    function incrementScore() {
+      score += 1;
+      document.getElementById('score').innerText = score;
+
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem('highScore', highScore);
+        document.getElementById('highScore').innerText = highScore;
+      }
+    }
+
+    // resetar o score
+    function restartScore() {
+      score = 0;
+      document.getElementById('score').innerText = score;
+    }
+    
+    // objetos iniciais
+    let obj1 = "Pedra";
+    let obj1Emoji = "🗿";
+    const toast = document.getElementById('toast');
+
+    // Função para exibir o toast
+    function showToast(message) {
+      toast.textContent = message;
+      toast.style.visibility = 'visible';
+      toast.style.opacity = 1;
+      setTimeout(() => {
+        toast.style.opacity = 0;
+        setTimeout(() => {
+          toast.style.visibility = 'hidden';
+        }, 500);
+      }, 2000);
+    }
+
+    // Função para atualizar o nome e emoji do obj1 na página
+    function updateObj1() {
+      document.getElementById('obj1-name').textContent = obj1;
+      document.getElementById('obj1-emoji').textContent = obj1Emoji;
+      document.getElementById('obj1-name-text').textContent = obj1;
+    }
+
+    // Função para enviar o pedido para a API
+    async function battle() {
+      const battleButton = document.getElementById('battle-button');
+      const loader = document.getElementById('loader');
+      const obj2 = document.getElementById('obj2-input').value;
+
+      if (!obj2) {
+        showToast("Digite algo para batalhar!");
+        return;
+      }
+
+      battleButton.style.display = 'none';
+      loader.style.display = 'inline-block';
+
+      const payload = {
+        obj1: obj1,
+        obj2: obj2
+      };
+
+      try {
+        const response = await fetch('https://infinite-battle-back-ck58a3ncm-otavio10s-projects.vercel.app/batalha', {  // URL do seu backend Flask
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.venceu === 2) {
+          incrementScore();
+          showToast(`${obj1} foi derrotado!`);
+          obj1 = result.nome;  // Atualiza o obj1 com o valor do obj2
+          obj1Emoji = result.newobj_emoji;  // Atualiza o emoji de obj1
+          updateObj1();
+          document.getElementById('obj2-input').value = '';  // Limpa o input
+        } else if (result.venceu === 1) {
+          restartScore();
+          showToast(`${obj1} não foi derrotado por ${obj2}.`);
+          obj1 = result.newobj;  // Atualiza obj1 com o novo objeto da resposta
+          obj1Emoji = result.newobj_emoji;  // Atualiza o emoji de obj1
+          updateObj1();
+          document.getElementById('obj2-input').value = '';  // Limpa o input
+        } else {
+          showToast(result.error || "Erro inesperado.");
+        }
+      } catch (error) {
+        console.error("Erro ao comunicar com a API:", error);
+        showToast("Ocorreu um erro, tente novamente.");
+      } finally {
+        // Show the button and hide the loader
+        battleButton.style.display = 'inline';
+        loader.style.display = 'none';
+      }
+    }
+
+    // Configurando o evento de clique no botão de batalha
+    document.getElementById('battle-button').addEventListener('click', battle);
+
+    // Inicializando o jogo
+    updateObj1();
+  </script>
+</body>
+</html>
