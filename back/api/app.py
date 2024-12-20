@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS, cross_origin  # Importa o CORS
+from flask_cors import CORS # Importa o CORS
 from openai import OpenAI
 from dotenv import load_dotenv
 import json, random, os
@@ -70,14 +70,21 @@ def get_battle_result(obj1, obj2):
         print(str(e))
         return {"error": f"Erro ao se comunicar com a API do ChatGPT: {str(e)}"}
         
-@app.route('/hello', methods=['POST'])
-@cross_origin(origin='*')
+@app.after_request
+def add_headers(response):
+    response.headers.add('Content-Type', 'application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Expose-Headers', 'Content-Type,Content-Length,Authorization,X-Pagination')
+    return response
+
+@app.route('/hello', methods=['GET'])
 def hello():
     return "hello"
 
 # Endpoint de batalha
 @app.route('/batalha', methods=['POST'])
-@cross_origin(origin='*')
 def batalha():
     try:
         data = request.get_json()
