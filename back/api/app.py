@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Importa o CORS
+from flask_cors import CORS, cross_origin  # Importa o CORS
 from openai import OpenAI
 from dotenv import load_dotenv
 import json, random, os
@@ -72,6 +72,7 @@ def get_battle_result(obj1, obj2):
 
 # Endpoint de batalha
 @app.route('/batalha', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def batalha():
     try:
         data = request.get_json()
