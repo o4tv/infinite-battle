@@ -81,7 +81,7 @@ def add_headers(response):
 
 @app.route('/hello', methods=['GET'])
 def hello():
-    return "hello"
+    return "hello world"
 
 # Endpoint de batalha
 @app.route('/batalha', methods=['POST'])
