@@ -188,6 +188,7 @@
 
       try {
         const response = await fetch('https://infinite-battle-back.vercel.app/batalha/', {  // URL do seu backend Flask
+          mode: 'no-cors',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
