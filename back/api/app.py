@@ -87,7 +87,12 @@ def hello():
 @app.route('/batalha', methods=['POST'])
 def batalha():
     try:
+        # data = json.loads(request.get_json())
         data = request.get_json()
+
+        print(data)
+
+        # obj1, obj2 = data.values()
 
         obj1 = data.get("obj1")
         obj2 = data.get("obj2")
@@ -119,7 +124,8 @@ def batalha():
             return jsonify({"venceu": 1, "newobj": nobj["nome"], "newobj_emoji": nobj["emoji"]})
 
     except Exception as e:
-        return jsonify({"error": f"Erro no servidor: {str(e)}"}), 500
+        print(e)
+        return jsonify({"error": f"Erro no servidor: {str(e)}"})
 
 # Iniciar o servidor
 if __name__ == '__main__':

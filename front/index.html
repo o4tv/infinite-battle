@@ -187,13 +187,12 @@
       };
 
       try {
-        const response = await fetch('https://infinite-battle-back.vercel.app/batalha', {  // URL do seu backend Flask
-          mode: 'no-cors',
+        const response = await fetch('http://localhost:5000/batalha', {  // URL do seu backend Flask
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({ obj1: obj1, obj2: obj2 })
         });
 
         const result = await response.json();
