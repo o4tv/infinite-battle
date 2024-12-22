@@ -15,12 +15,17 @@
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
       display: flex;
+      height: 100vh;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      overflow-y: hidden;
+      overflow-x: hidden;
     }
 
     #game-container {
+      width: 500px;
+      display: flex;
+      flex-direction: column;
       background-color: white;
       border-radius: 8px;
       padding: 20px;
@@ -29,6 +34,17 @@
 
     #obj1-display {
       text-align: center;
+    }
+
+    #obj1-display h5{
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    #obj1-display h6{
+      font-size: 12px;
+      margin: 8px 0;
+      color: #45a049;
     }
 
     #obj1-emoji {
@@ -41,15 +57,18 @@
     }
 
     #obj2-input {
-      padding: 8px;
       font-size: 16px;
       margin-top: 10px;
-      width: 100%;
+      padding: 8px;
+      border: 1px solid #989898;
+      border-radius: 4px;
+      width: 80%;
     }
 
     #battle-button {
       display: inline;
       padding: 10px 20px;
+      border-radius: 4px;
       background-color: #4CAF50;
       color: white;
       border: none;
@@ -85,6 +104,12 @@
       animation: spin 0.5s linear infinite;
     }
 
+    @media (max-width: 500px) {
+      #game-container {
+        width: 90%;
+      }
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -94,15 +119,15 @@
 <body>
   <div id="game-container">
     <div id="obj1-display">
-      <h5>Score: <span id="score">0</span></h1>
-      <h6>High Score: <span id="highScore">0</span></h2>
+      <h5>Pontos: <span id="score">0</span></h1>
+      <h6>Recorde: <span id="highScore">0</span></h2>
       <h1 id="obj1-name">Pedra</h1>
       <div id="obj1-emoji">🗿</div>
     </div>
     <div id="battle">
       <label for="obj2-input">O que derrota um(a) <span id="obj1-name-text">Pedra</span>?</label>
       <br>
-      <input type="text" id="obj2-input" placeholder="Digite o que acha que derrota o(a) Pedra">
+      <input type="text" id="obj2-input" placeholder="Qualquer coisa">
       <br>
       <button id="battle-button">Batalhar</button>
       <div class="loader" id="loader"></div>
