@@ -167,8 +167,18 @@
       document.getElementById('score').innerText = score;
     }
     
+    let obj1;
+    let obj1Emoji;
+
+    // Função para atualizar o nome e emoji do obj1 na página
+    function updateObj1() {
+      document.getElementById('obj1-name').textContent = obj1;
+      document.getElementById('obj1-emoji').textContent = obj1Emoji;
+      document.getElementById('obj1-name-text').textContent = obj1;
+    }
     // objetos iniciais
-    let obj1i = async () => {
+    async function startObj1() {
+      let obj1i = [];
       try {
         const response = await fetch('https://infinite-battle-back.vercel.app/1st', {
           method: 'GET',
@@ -178,14 +188,17 @@
         });
         const result = await response.json();
 
-        return [result.nome, result.emoji]
+        obj1i = [result.nome, result.emoji]
       } catch (error) {
         console.error("Erro 1st:", error);
-        return ["Pedra", "🗿"];
+        obj1i = ["Pedra", "🗿"];
       }
-    };
-    let obj1 = obj1i[0];
-    let obj1Emoji = obj1i[1];
+      obj1 = obj1i[0];
+      obj1Emoji = obj1i[1];
+
+      updateObj1();
+    }
+    startObj1();
     const toast = document.getElementById('toast');
 
     // Função para exibir o toast
@@ -201,12 +214,7 @@
       }, 2000);
     }
 
-    // Função para atualizar o nome e emoji do obj1 na página
-    function updateObj1() {
-      document.getElementById('obj1-name').textContent = obj1;
-      document.getElementById('obj1-emoji').textContent = obj1Emoji;
-      document.getElementById('obj1-name-text').textContent = obj1;
-    }
+    
 
     // Função para enviar o pedido para a API
     async function battle() {
