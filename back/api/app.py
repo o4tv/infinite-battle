@@ -83,6 +83,10 @@ def add_headers(response):
 def hello():
     return "hello world"
 
+@app.route('/1st', methods=['GET'])
+def first():
+    return jsonify(get_random_objeto())
+
 # Endpoint de batalha
 @app.route('/batalha', methods=['POST'])
 def batalha():
@@ -107,7 +111,6 @@ def batalha():
         # Determina o resultado da batalha
         # {"venceu": "Pedra", "emoji": "🗿"}
         battle_result = get_battle_result(obj1, obj2)
-        print(battle_result)
 
         if 'error' in battle_result:
             return jsonify(battle_result), 500

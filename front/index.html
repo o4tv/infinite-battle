@@ -167,9 +167,27 @@
       document.getElementById('score').innerText = score;
     }
     
+    let obj1;
+    let obj1Emoji;
     // objetos iniciais
-    let obj1 = "Pedra";
-    let obj1Emoji = "🗿";
+    try {
+      const response = await fetch('https://infinite-battle-back.vercel.app/1st', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await response.json();
+
+      obj1 = result.nome;
+      obj1Emoji = result.emoji;
+    } catch (error) {
+      console.error("Erro 1st:", error);
+      showToast("Conecte-se a internet.");
+      obj1 = "Pedra";
+      obj1Emoji = "🗿";
+    }
+      
     const toast = document.getElementById('toast');
 
     // Função para exibir o toast
@@ -212,7 +230,7 @@
       };
 
       try {
-        const response = await fetch('https://infinite-battle-back.vercel.app/batalha', {  // URL do seu backend Flask
+        const response = await fetch('https://infinite-battle-back.vercel.app/batalha', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
