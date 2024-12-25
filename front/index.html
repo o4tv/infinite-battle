@@ -148,6 +148,9 @@
     let score = 0;
     let highScore = localStorage.getItem('highScore') || 0;
     document.getElementById('highScore').innerText = highScore;
+
+    // lista de objetos já colocados
+    let placedObjects = JSON.parse(localStorage.getItem('placedObjects')) || [];
     
     // incrementar o score
     function incrementScore() {
@@ -165,6 +168,8 @@
     function restartScore() {
       score = 0;
       document.getElementById('score').innerText = score;
+      placedObjects = [];
+      localStorage.setItem('placedObjects', JSON.stringify(placedObjects));
     }
     
     let obj1;
@@ -214,8 +219,6 @@
       }, 2000);
     }
 
-    
-
     // Função para enviar o pedido para a API
     async function battle() {
       const battleButton = document.getElementById('battle-button');
@@ -224,6 +227,11 @@
 
       if (!obj2) {
         showToast("Digite algo para batalhar!");
+        return;
+      }
+
+      if (placedObjects.includes(obj2)) {
+        showToast("Este objeto já foi usado!");
         return;
       }
 
@@ -249,16 +257,26 @@
         if (result.venceu === 2) {
           incrementScore();
           showToast(`${obj1} foi derrotado!`);
+          
           obj1 = result.nome;  // Atualiza o obj1 com o valor do obj2
           obj1Emoji = result.newobj_emoji;  // Atualiza o emoji de obj1
           updateObj1();
+          
+          placedObjects.push(obj2);
+          localStorage.setItem('placedObjects', JSON.stringify(placedObjects));
+          
           document.getElementById('obj2-input').value = '';  // Limpa o input
         } else if (result.venceu === 1) {
           restartScore();
           showToast(`${obj1} não foi derrotado por ${obj2}.`);
+          
           obj1 = result.newobj;  // Atualiza obj1 com o novo objeto da resposta
           obj1Emoji = result.newobj_emoji;  // Atualiza o emoji de obj1
           updateObj1();
+          
+          placedObjects.push(obj1);
+          localStorage.setItem('placedObjects', JSON.stringify(placedObjects));
+
           document.getElementById('obj2-input').value = '';  // Limpa o input
         } else {
           showToast(result.error || "Erro inesperado.");
